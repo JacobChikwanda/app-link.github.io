@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Deep Link Test</title>
     <script>
@@ -11,43 +12,53 @@
             };
         }
 
+        function getDeepLinkUrl(params) {
+            return `com.ftc.powered://path?userId=${params.userId}&otherParam=${params.otherParam}`;
+        }
+
+        function getFallbackUrl() {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+            if (/android/i.test(userAgent)) {
+                return 'https://play.google.com/store/apps/details?id=com.ftc.powered';
+            } else if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                return 'https://apps.apple.com/app/idYOUR_APP_ID';
+            } else {
+                return null;
+            }
+        }
+
         function openApp() {
             const params = getQueryParams();
+            const deepLinkUrl = getDeepLinkUrl(params);
+            const fallbackUrl = getFallbackUrl();
 
             if (!params.userId || !params.otherParam) {
                 alert('Missing required parameters.');
                 return;
             }
 
-            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-            let deepLinkUrl;
-            let fallbackUrl;
-
-            if (/android/i.test(userAgent)) {
-                // Android device
-                deepLinkUrl = `com.ftc.powered://path?userId=${params.userId}&otherParam=${params.otherParam}`;
-                fallbackUrl = 'https://play.google.com/store/apps/details?id=com.ftc.powered';
-            } else if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-                // iOS device
-                deepLinkUrl = `com.ftc.powered://path?userId=${params.userId}&otherParam=${params.otherParam}`;
-                fallbackUrl = 'https://apps.apple.com/app/idYOUR_APP_ID';
-            } else {
+            if (!fallbackUrl) {
                 alert('Unsupported device.');
                 return;
             }
 
+            // Attempt to open the app
             window.location.href = deepLinkUrl;
 
-            setTimeout(function() {
+            // Fallback to the app store if the app is not installed
+            setTimeout(function () {
                 window.location.href = fallbackUrl;
-            }, 3000);  // Adjust timeout as needed
+            }, 2000);  // Adjust timeout as needed
         }
 
-        window.onload = function() {
-            openApp();
+        window.onload = function () {
+            setTimeout(openApp, 10000);  // Slight delay to allow page to load
         }
     </script>
 </head>
+
 <body>
 </body>
+
 </html>
