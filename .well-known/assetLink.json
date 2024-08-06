@@ -1,0 +1,14 @@
+[
+    {
+        "relation": [
+            "delegate_permission/common.handle_all_urls"
+        ],
+        "target": {
+            "namespace": "android_app",
+            "package_name": "com.ftc.powered",
+            "sha256_cert_fingerprints": [
+                "DB:2C:2A:D8:C0:74:25:18:44:E6:A7:2F:43:B0:7A:F7:A0:FF:D3:6C"
+            ]
+        }
+    }
+]
