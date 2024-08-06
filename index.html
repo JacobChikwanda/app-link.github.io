@@ -49,11 +49,11 @@
             // Fallback to the app store if the app is not installed
             setTimeout(function () {
                 window.location.href = fallbackUrl;
-            }, 2000);  // Adjust timeout as needed
+            }, 5000);  // Adjust timeout as needed
         }
 
         window.onload = function () {
-            setTimeout(openApp, 10000);  // Slight delay to allow page to load
+            setTimeout(openApp, 500);  // Slight delay to allow page to load
         }
     </script>
 </head>
