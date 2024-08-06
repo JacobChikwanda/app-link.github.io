@@ -1,32 +1,53 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>Deep Link Test</title>
     <script>
         function getQueryParams() {
             const params = new URLSearchParams(window.location.search);
             return {
-                userId: params.get('userId') || 'defaultUserId',  // Example default value
-                otherParam: params.get('otherParam') || 'defaultValue'  // Another example parameter
+                userId: params.get('userId') || null,
+                otherParam: params.get('otherParam') || null
             };
         }
 
         function openApp() {
             const params = getQueryParams();
-            const deepLinkUrl = `com.ftc.powered://path?userId=${params.userId}&otherParam=${params.otherParam}`;
+
+            if (!params.userId || !params.otherParam) {
+                alert('Missing required parameters.');
+                return;
+            }
+
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            let deepLinkUrl;
+            let fallbackUrl;
+
+            if (/android/i.test(userAgent)) {
+                // Android device
+                deepLinkUrl = `com.ftc.powered://path?userId=${params.userId}&otherParam=${params.otherParam}`;
+                fallbackUrl = 'https://play.google.com/store/apps/details?id=com.ftc.powered';
+            } else if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                // iOS device
+                deepLinkUrl = `com.ftc.powered://path?userId=${params.userId}&otherParam=${params.otherParam}`;
+                fallbackUrl = 'https://apps.apple.com/app/idYOUR_APP_ID';
+            } else {
+                alert('Unsupported device.');
+                return;
+            }
 
             window.location.href = deepLinkUrl;
 
-            setTimeout(function () {
-                window.location.href = 'https://play.google.com/store/apps/details?id=com.ftc.powered';  // Fallback to Play Store if app is not installed
+            setTimeout(function() {
+                window.location.href = fallbackUrl;
             }, 3000);  // Adjust timeout as needed
+        }
+
+        window.onload = function() {
+            openApp();
         }
     </script>
 </head>
-
 <body>
-    <a href="javascript:openApp();">Open App</a>
 </body>
-
 </html>
