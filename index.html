@@ -1,11 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Deep Link Test</title>
+    <script>
+        function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                userId: params.get('userId') || 'defaultUserId',  // Example default value
+                otherParam: params.get('otherParam') || 'defaultValue'  // Another example parameter
+            };
+        }
+
+        function openApp() {
+            const params = getQueryParams();
+            const deepLinkUrl = `com.ftc.powered://path?userId=${params.userId}&otherParam=${params.otherParam}`;
+
+            window.location.href = deepLinkUrl;
+
+            setTimeout(function () {
+                window.location.href = 'https://play.google.com/store/apps/details?id=com.ftc.powered';  // Fallback to Play Store if app is not installed
+            }, 3000);  // Adjust timeout as needed
+        }
+    </script>
 </head>
+
 <body>
-    <a href="com.ftc.powered://">Open App</a>
+    <a href="javascript:openApp();">Open App</a>
 </body>
+
 </html>
