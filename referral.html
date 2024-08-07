@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Deep Link Referral</title>
+    <script>
+        function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                id: params.get('id') || null,
+                type: params.get('type') || null,
+                email: params.get('email') || null,
+                level: params.get('level') || null,
+                agentId: params.get('agentId') || null
+            };
+        }
+
+        function getDeepLinkUrl(params) {
+            return `com.ftc.powered://referral?
+                id=${params.id}&
+                type=${params.type}&
+                email=${params.email}&
+                level=${params.level}&
+                agentId=${params.agentId}`;
+        }
+
+        function getFallbackUrl() {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+            if (/android/i.test(userAgent)) {
+                return 'https://play.google.com/store/apps/details?id=com.ftc.powered';
+            } else if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                return 'https://apps.apple.com/app/idYOUR_APP_ID';
+            } else {
+                return null;
+            }
+        }
+
+        function openApp() {
+            const params = getQueryParams();
+            const deepLinkUrl = getDeepLinkUrl(params);
+            const fallbackUrl = getFallbackUrl();
+
+            if (!params.id || !params.agentId || !params.email || !params.id || !params.type || !params.type) {
+                alert('Missing required parameters.');
+                return;
+            }
+
+            if (!fallbackUrl) {
+                alert('Unsupported device.');
+                return;
+            }
+
+            // Attempt to open the app
+            window.location.href = deepLinkUrl;
+
+            const start = new Date().getTime();
+            const timeout = 2000; // Adjust timeout as needed
+
+            document.addEventListener('visibilitychange', function () {
+                if (document.visibilityState === 'hidden') {
+                    clearTimeout(timer);
+                }
+            });
+
+            const timer = setTimeout(function () {
+                const elapsed = new Date().getTime() - start;
+                if (elapsed < timeout + 100) { // Additional 100ms buffer
+                    document.getElementById('fallback-buttons').style.display = 'flex';
+                }
+            }, timeout);
+        }
+
+        window.onload = function () {
+            setTimeout(openApp, 500); // Slight delay to allow page to load
+        }
+    </script>
+    <style>
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            color: #fff;
+            background-color: #000;
+            border-color: #000000;
+            border-radius: 15px;
+            margin: 5px;
+            width: 15em;
+        }
+
+        .button:hover {
+            background-color: #3e8e41
+        }
+
+        .button:active {
+            background-color: #3e8e41;
+            box-shadow: 0 5px #666;
+            transform: translateY(4px);
+        }
+
+        .button img {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        #fallback-buttons {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="fallback-buttons">
+        <a href="https://play.google.com/store/apps/details?id=com.ftc.powered" class="button">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Google_Play_2016_icon.svg/640px-Google_Play_2016_icon.svg.png"
+                alt="Google Play Store">
+            Download from Google Play
+        </a>
+        <a href="https://apps.apple.com/app/idYOUR_APP_ID" class="button">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/App_Store_%28OS_X%29.svg/640px-App_Store_%28OS_X%29.svg.png"
+                alt="App Store">
+            Download from App Store
+        </a>
+    </div>
+</body>
+
+</html>
